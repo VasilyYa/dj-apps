@@ -1,12 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>
-  
-  </title>
-</head>
-<body>
-Hello! {{ param1 }}
-</body>
-</html>
+{% extends "base.html" %}
+
+
+{% block content %}
+  <p>Hello, {{ visitor_name }}! This is list of 20 vacancies in IT/Python/Django:</p>
+  {% if reg_success %}
+    {% for vacancy in vacancies %}
+      {# выделяем вакансии с зарплатой больше 100т.р. #}
+      {% if vacancy.salary > 100000 %}
+        <div style="font-weight: bold; color: green">
+      {% else %}
+        <div>
+      {% endif %}
+      <br>
+      ПРОФЕССИЯ : {{ vacancy.name | upper }} <br>
+      З/П : {{ vacancy.salary}} <br>
+      РАБОТОДАТЕЛЬ {{ vacancy.employer }} <br>
+
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    console.log("hello~!");
+  </script>
+{% endblock %}
+
+{% block title %}
+  I'm index page!
+{% endblock %}
