@@ -32,6 +32,7 @@ class Score(models.Model):
 
 	def __str__(self):
 		return "Title %s, published: %s, from %s" % (self.name, self.publication_date, self.publisher)
+
 	class Meta:
 		db_table = 'scores'
 
