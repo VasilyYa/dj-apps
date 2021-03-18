@@ -76,14 +76,14 @@ WSGI_APPLICATION = 'test_django.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'test_django',
-        'USER': 'develop',
-        'PASSWORD': 'develop',
-        'HOST': '127.0.0.1',
-        'PORT': '',
-    }
+     'default': {
+         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+         'NAME': 'test_django',
+         'USER': 'develop',
+         'PASSWORD': 'develop',
+         'HOST': '127.0.0.1',
+         'PORT': '',
+     }
 
     #'default': {
     #    'ENGINE': 'django.db.backends.sqlite3',
