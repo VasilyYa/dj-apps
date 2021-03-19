@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import datetime
+import datetime
 from django.utils import timezone
 
 # Create your models here.
@@ -28,10 +28,24 @@ class Score(models.Model):
 	                                                      # django автоматически (см. миграцию 0001_initial.py)
 	creation_date = models.DateField(null=True, blank=True, verbose_name='Дата создания муз. произведения')
 	publication_date = models.DateField(default=timezone.now, null=True, verbose_name='Дата публикации нот')
-	# composers = ... (связь типа "многие ко многим" будет разобрана на след. занятии № 5)
+	composers = models.ManyToManyField('Composer', through='ComposerScore') # !!!!!!!!!!
+
+	def to_json(self):
+		pass
+
+	# пример встраивания логики в модель (правильно с т.з. MVC):
+	@property # <-позволяет манипулировать функцией как свойством
+	def published_recently(self):
+		return self.publication_date >= timezone.now() - datetime.timedelta(days=1)
 
 	def __str__(self):
-		return "Title %s, published: %s, from %s" % (self.name, self.publication_date, self.publisher)
+		composers_str = '; '.join([x.__str__() for x in self.composers.all()])
+		return "Title(name): %s, published: %s, by %s, from: %s" % (self.name, \
+			self.publication_date, composers_str, self.publisher)
+
+	# def save(self):
+	# 	#
+	# 	return super(Score, self).save(*args, **kwargs)
 
 	class Meta:
 		db_table = 'scores'
@@ -42,9 +56,28 @@ class Composer(models.Model):
 		blank=False, unique=False, verbose_name="Имя")
 	last_name = models.CharField(max_length=30, null=True, \
 		blank=True, unique=False, verbose_name="Фамилия")
-	email = models.EmailField()
+	pen_name = models.CharField(max_length=50, null=True, \
+		blank=False, unique=True) # уникальное имя (псевдоним), либо допускается null
+	email = models.EmailField(null=True, blank=True, unique=True) # email также уникален, либо отсутствует (null)
+																  # значения null в БД становятся None!!!
 	headshot = models.ImageField(upload_to='tmp', verbose_name="фотография")
 	website = models.URLField(null=True, blank=True, unique=False, verbose_name="Веб-страница")
 
+	def __str__(self):
+		if self.pen_name is not None:
+			return "%s %s (known as %s)." % (self.first_name, self.last_name, self.pen_name)
+		return self.first_name
+
 	class Meta:
 		db_table = 'composers'
+
+
+
+#класс Композиторы ))
+class ComposerScore(models.Model):
+	composer = models.ForeignKey('Composer', to_field='id', on_delete=models.CASCADE, db_column='composer_id', null=False, blank=False, unique=False)
+	score = models.ForeignKey('Score', to_field='id', on_delete=models.CASCADE, db_column='score_id', null=False, blank=False, unique=False)
+
+	class Meta:
+		db_table = 'composers_scores'
+		
