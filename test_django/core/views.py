@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls import reverse
 import requests
+from . import models
 # import json
 # import datetime
 # Create your views here.
@@ -90,7 +91,7 @@ def index(request, reg_success=None):
   return redirect(to=reverse('r_site_index', args=(1,)))
 '''
 
-
+'''
 def index(request, reg_success=None):
   if reg_success is not None:
     # сформируем словарь объекта контекст
@@ -122,3 +123,27 @@ def index(request, reg_success=None):
     return render(request, template_name='index.html', context=ctx)
   
   return redirect(to=reverse('r_site_index', args=(1,)))
+  '''
+
+def index(request, reg_success=None):
+  #import pdb
+  #pdb.set_trace() #инструмент для отладки!!!
+  ctx = {}
+
+  return render(request, template_name='index.html', context=ctx)
+
+def scores(request):
+  ctx = {}
+  ctx.update({ 'scores' : [s.to_json() for s in models.Score.objects.all()] })
+
+  return render(request, template_name='scores.html', context=ctx)
+
+
+def display_meta(request):
+  values = list(request.META.items())
+  values.sort()
+  #assert False
+  html = []
+  for k,v in values:
+    html.append('<tr><td>%s</td><td>%s</td></tr>' % (k, v))
+  return HttpResponse('<table>%s</table>' % '\n'.join(html))

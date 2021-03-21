@@ -110,6 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'core.user' # ДОБАВИЛИ НАСТРОЙКУ АУТЕНТИФИКАЦИИ (ЛЕКЦИЯ 6)
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -118,7 +119,8 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'ru-ru'
 
 # TIME_ZONE = 'UTC'
-TIME_ZONE = 'Europe/Moscow'
+# TIME_ZONE = 'Europe/Moscow'
+TIME_ZONE = 'Asia/Yekaterinburg'
 
 USE_I18N = True
 

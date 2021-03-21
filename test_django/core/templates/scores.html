@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+  <p>Scores list:</p>
+  {% for score in scores %}
+    <span>{{ score.title }}</span>
+    <span>{{ score.publisher }}</span>
+    <span>{{ score.publication_date }}</span>
+    {% comment %}
+    {% for composer in score.composers %}
+      <span>{{ composer }}</span>
+    {% endfor %}
+    {% endcomment %}
+  {% endfor %}
+
+  <p>Test form</p>
+  <div>
+    <form action="" method="GET">
+      {% csrf_token %}
+      <input type="text" name="test_text" value="test from">
+      <input type="submit" name="submit">
+    </form>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    console.log("score page~!");
+  </script>
+{% endblock %}
+
+{% block title %}
+  Score's page!
+{% endblock %}

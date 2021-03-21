@@ -13,7 +13,10 @@ urlpatterns = [
   				# исп. шаблон \d+ для выделения одной или более цифр
   				# r - raw-строка python
   				# заключенное в скобки выражение (\d+) будет передано вторым параметром в функцию hours_ahead)
-  path('redirected/<int:reg_success>/', views.index, name='r_site_index'),			                
-  
+  #path('redirected/<int:reg_success>/', views.index, name='r_site_index'),
+    			                
+  path('scores', views.scores, name='site_scores'),
+  path('meta', views.display_meta, name='site_metainfo'), # чтобы посмотреть словарь request.META 
+                                                          #(!!содержит все заголовки текущего HTTP-запроса)
 
 ]
