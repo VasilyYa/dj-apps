@@ -2,11 +2,14 @@
 
 
 {% block content %}
-  <p>Scores list:</p>
+  <p>Перечень нот:</p>
   {% for score in scores %}
-    <span>{{ score.title }}</span>
-    <span>{{ score.publisher }}</span>
-    <span>{{ score.publication_date }}</span>
+    <div>
+      <span>{{ score.title }}</span>
+      <span>{{ score.publisher }}</span>
+      <span>{{ score.publication_date }}</span>
+      <button>Add</button>
+    </div>
     {% comment %}
     {% for composer in score.composers %}
       <span>{{ composer }}</span>
@@ -14,14 +17,8 @@
     {% endcomment %}
   {% endfor %}
 
-  <p>Test form</p>
-  <div>
-    <form action="" method="GET">
-      {% csrf_token %}
-      <input type="text" name="test_text" value="test from">
-      <input type="submit" name="submit">
-    </form>
-  </div>
+  <hr>
+  
 {% endblock %}
 
 {% block scripts %}

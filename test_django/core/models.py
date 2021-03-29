@@ -7,8 +7,10 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.utils import IntegrityError
 
 # Create your models here.
-# МОДЕЛИ (классы):
+# МОДЕЛИ (=классы):
 
+
+# константы:
 USER_TYPE_ADMIN = 1
 USER_TYPE_COMPOSER = 2
 
@@ -54,8 +56,8 @@ class InnerUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-#класс Композитор - переименовали его в User (соотв-но поменяли знач-е аттрибута composer в классе ComposerScore)
-#class Composer(models.Model):
+# класс Композитор - переименовали его в User (соотв-но поменяли знач-е аттрибута composer в классе ComposerScore)
+# class Composer(models.Model):
 	first_name = models.CharField(max_length=20, null=False, \
 		blank=False, unique=False, verbose_name="Имя")
 	last_name = models.CharField(max_length=30, null=True, \
@@ -78,8 +80,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 	def __str__(self):
 		if self.pen_name is not None:
-			return "%s %s (known as %s)." % (self.first_name, self.last_name, self.pen_name)
+			return "%s %s (known as %s)" % (self.first_name, self.last_name, self.pen_name)
 		return self.first_name
+
+	@property
+	def full_name(self):
+		return self.__str__()
+	
 
 	class Meta:
 		db_table = 'users'
@@ -88,7 +95,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 		ordering = ["first_name"]
 
 
-#класс Композиторы ))
+# класс Композиторы_и_Ноты (связь нот с из композиторами - связь вида ManyToMany (задана в классе Score))
 class ComposerScore(models.Model):
 	composer = models.ForeignKey('User', to_field='id', on_delete=models.CASCADE, db_column='composer_id', null=False, blank=False, unique=False)
 	score = models.ForeignKey('Score', to_field='id', on_delete=models.CASCADE, db_column='score_id', null=False, blank=False, unique=False)
@@ -115,6 +122,9 @@ class Score(models.Model):
 	publication_date = models.DateField(default=timezone.now, null=True, verbose_name='Дата публикации нот')
 	composers = models.ManyToManyField('User', through='ComposerScore') # !!!!!!!!!!
 
+	def starred(self):
+		pass
+
 	def to_json(self):
 		scores_obj = {}
 		if not self.id: # проверка, сохранено ли в базу
@@ -123,8 +133,10 @@ class Score(models.Model):
 		scores_obj.update({'title': self.title})
 		scores_obj.update({'publisher': self.publisher})
 		scores_obj.update({'publication_date': self.publication_date})
-		scores_obj.update({'composers': [c.__str__() for c in self.composers.all()]})
-
+		if len(self.composers.all()) > 0:
+			scores_obj.update({'composers': [c.__str__() for c in self.composers.all()]})
+		else:
+			scores_obj.update({'composers': []})
 		return scores_obj
 
 	# пример встраивания логики в модель (правильно с т.з. MVC):

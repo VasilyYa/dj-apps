@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+  <p>Hello! This is login page.</p>
+  {% if request.user.is_authenticated %}
+    <p>Вы уже залогинены!</p>
+    
+  {% else %}
+    <p>LOGIN FORM</p>
+    <div>
+      {% if error %}
+        <p class="text-danger">{{ error }}</p>
+      {% endif %}
+      <form action="{% url 'site_login' %}" method="POST">
+      {% csrf_token %}
+      <input type="text" name="email" value="test_form">
+      <input type="password" name="password" value="test_form"> <!--лучше name не называть password (см. лекцию7 26я минута)  -->
+      <input type="submit" name="submit">
+      </form>
+    </div>  
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}
+  <script type="text/javascript">
+    console.log("hello~!");
+  </script>
+{% endblock %}
+
+{% block title %}
+  I'm login page!
+{% endblock %}

@@ -2,22 +2,9 @@
 
 
 {% block content %}
-  <p>Hello, {{ visitor_name }}! This is list of 20 vacancies in IT/Python/Django:</p>
+  <p>Hello! This is index page.</p>
   {% if reg_success %}
-    {% for vacancy in vacancies %}
-      {# выделяем вакансии с зарплатой больше 100т.р. #}
-      {% if vacancy.salary > 100000 %}
-        <div style="font-weight: bold; color: green">
-      {% else %}
-        <div>
-      {% endif %}
-      <br>
-      ПРОФЕССИЯ : {{ vacancy.name | upper }} <br>
-      З/П : {{ vacancy.salary}} <br>
-      РАБОТОДАТЕЛЬ {{ vacancy.employer }} <br>
-
-      </div>
-    {% endfor %}
+    <p>You are logged in!</p>
   {% endif %}
 {% endblock %}
 
