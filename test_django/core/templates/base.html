@@ -6,13 +6,20 @@
 </head>
 <body>
 	{% if request.user.is_authenticated %}
-		<p>Вы уже залогинены как {{ request.user.full_name }}!</p>
+		<p>Вы залогинены как {{ request.user.full_name }}!</p>
 		<a href="{% url 'site_logout' %}?path={{ request.path }}">Выйти</a>
 	{% else %}
 		<a href="{% url 'site_login' %}?">Войти</a>
 	{% endif %}
+
     {% block content %}
     {% endblock %}
+
+	{% block footer %}
+		<div style="padding-top: 20px; font-style: italic;">
+			<a href="{% url 'site_index' %}?">Вернуться на главную</a>
+		</div>
+	{% endblock %}
 
     {% block scripts %}
     {% endblock %}

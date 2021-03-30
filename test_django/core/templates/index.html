@@ -2,11 +2,27 @@
 
 
 {% block content %}
-  <p>Hello! This is index page.</p>
-  {% if reg_success %}
-    <p>You are logged in!</p>
-  {% endif %}
+	<p>Hello! This is index page.</p>
+	<p>
+		<a href="{% url 'site_scores' %}?">Перейти к нотному архиву</a>
+	</p>
+	<hr>
+	{% comment %}
+		{% if reg_success %}
+			<p>You are logged in!</p>
+		{% endif %}
+	{% endcomment %}
+
+{% if added_context %}
+	<p>Added context is: {{ added_context }}</p>
+{% endif %}
+
+{% if added_context2 %}
+	<p>Added context 2 is: {{ added_context2 }}</p>
+{% endif %}
+
 {% endblock %}
+
 
 {% block scripts %}
   <script type="text/javascript">
@@ -14,6 +30,11 @@
   </script>
 {% endblock %}
 
+
 {% block title %}
   I'm index page!
+{% endblock %}
+
+{% block footer %}
+	&nbsp;
 {% endblock %}

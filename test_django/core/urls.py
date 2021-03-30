@@ -4,7 +4,6 @@ from django.urls import path, re_path, include
 from . import views
 
 urlpatterns = [
-  path('', views.index, name='site_index'),
   #path('redirected', views.index, name='r_site_index'),
   #path('hello', views.hello),
   #path('time', views.current_datetime),
@@ -14,8 +13,12 @@ urlpatterns = [
   				# r - raw-строка python
   				# заключенное в скобки выражение (\d+) будет передано вторым параметром в функцию hours_ahead)
   #path('redirected/<int:reg_success>/', views.index, name='r_site_index'),
-    			                
-  path('scores', views.scores, name='site_scores'),
+  
+  # path('', views.index name='site_index'),  			                
+  # path('', views.IndexView.as_view(), name='site_index'),
+  path('', views.IndexView.as_view(extra_context={'added_context2':'This is another added context (through \'extra_context=\'!)'}), name='site_index'),
+  # path('scores', views.scores, name='site_scores'),
+  path('scores', views.ScoresView.as_view(), name='site_scores'),
   path('login', views.login, name='site_login'),
   path('logout', views.logout, name='site_logout'),
   path('meta', views.display_meta, name='site_metainfo'), # чтобы посмотреть словарь request.META 

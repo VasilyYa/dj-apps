@@ -77,6 +77,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 	USERNAME_FIELD = 'email'  # поэтому в аттрибуте email запретил true-значения blank и null
 	REQUIRED_FIELDS = []
 
+	def starred_scores(self):
+		pass
+
 
 	def __str__(self):
 		if self.pen_name is not None:
@@ -122,6 +125,7 @@ class Score(models.Model):
 	publication_date = models.DateField(default=timezone.now, null=True, verbose_name='Дата публикации нот')
 	composers = models.ManyToManyField('User', through='ComposerScore') # !!!!!!!!!!
 
+	@property
 	def starred(self):
 		pass
 
@@ -153,3 +157,18 @@ class Score(models.Model):
 	class Meta:
 		db_table = 'scores'
 		ordering = ["publisher_id"]
+
+
+
+class ScoreStar(models.Model):
+	user = models.ForeignKey('User', to_field='id', on_delete=models.CASCADE, db_column='user_id', null=False, blank=False, unique=False)
+	score = models.ForeignKey('Score', to_field='id', on_delete=models.CASCADE, db_column='score_id', null=False, blank=False, unique=False)
+
+	def save(self,*args, **kwargs):
+		# if self.composer.type_of != USER_TYPE_COMPOSER:
+		# 	raise ValueError('Composer has wrong type_of field value!')
+
+		return super(ScoreStar, self).save(*args, **kwargs)
+
+	class Meta:
+		db_table = 'starred_scores'

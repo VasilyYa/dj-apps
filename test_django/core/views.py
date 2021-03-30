@@ -3,7 +3,7 @@ import json
 # import datetime
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.urls import reverse
 from django.contrib.auth import authenticate, login as sign_in, logout as sign_out
 from django.contrib.auth.decorators import login_required
@@ -13,7 +13,7 @@ from . import models
 from . import forms
 
 from .mixins import JSONResponseMixin
-from django.views.generic import View, UpdateView, CreateView
+from django.views.generic import View, TemplateView, ListView, UpdateView, CreateView
 
 
 # Create your views here.
@@ -107,7 +107,88 @@ def display_meta(request):
     html.append('<tr><td>%s</td><td>%s</td></tr>' % (k, v))
   return HttpResponse('<table>%s</table>' % '\n'.join(html))
 '''-------------------------------------------------------------------------------'''
+'''
+def index(request, reg_success=None):
+  #import pdb
+  #pdb.set_trace() #инструмент для отладки!!!
+  ctx = {}
 
+  return render(request, template_name='index.html', context=ctx)
+'''
+
+
+@login_required(login_url='site_login')
+def scores(request):
+  ctx = {}
+
+  ctx.update({ 'scores' : [s.to_json() for s in models.Score.objects.all()] })
+
+  return render(request, template_name='scores.html', context=ctx)
+
+# (Class-Based Views): -------------------------------------------------------------
+# описываем вьюхи-классы, основанные на встроенных в django общих вьюхах (Class-Based Views)
+# ДЗ (лекция8) - переписать вьюхи index и scores - сделать их как Class-Based Views:
+
+# На основе View:
+# class IndexView(View):
+# 	def get(self,request):
+# 		return HttpResponse('Hello, this is View')
+
+# На основе TemplateView:
+class IndexView(TemplateView):
+	template_name = 'index.html'
+	# переопределяем get_context_data, чтобы добавить 
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['added_context'] = 'This is added context!'
+		# print(context)
+		return context
+
+
+# class ScoresView(TemplateView):
+# 	template_name = 'scores.html'
+
+# 	def get(self, request, *args, **kwargs):
+# 		context = self.get_context_data(**kwargs)
+# 		return self.render_to_response(context)
+
+# 	def get_context_data(self, **kwargs):
+# 		context = super().get_context_data(**kwargs)
+# 		context.update({ 'scores' : [s.to_json() for s in models.Score.objects.all()] })
+# 		# print(context)
+# 		return context
+
+
+# class ScoresView(CreateView):
+# 	template_name = 'scores.html'
+# 	model = models.Score
+# 	fields = ('title',)
+
+# 	def get_context_data(self, **kwargs):
+# 		context = super().get_context_data(**kwargs)
+# 		context.update({ 'scores' : [s.to_json() for s in models.Score.objects.all()] })
+# 		# print(context)
+# 		return context
+
+
+class ScoresView(TemplateView):
+	template_name = 'scores.html'
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context.update({ 'scores' : [s.to_json() for s in models.Score.objects.all()] })
+		# print(context)
+		return context
+
+	def dispatch(self, request, *args, **kwargs):
+		if not request.user.is_authenticated:
+			path = "/"
+			return redirect(to=reverse('site_login'))
+			# return HttpResponseForbidden()
+			# return HttpResponse('Unauthorized', status=401)
+		return super(ScoresView, self).dispatch(request, *args, *kwargs)
+
+# ----------------------------------------------------------------------------------
 
 #регистрация новых пользователей (композиторов)
 def register(request):
@@ -152,36 +233,26 @@ def logout(request):
   sign_out(request) # (from django.contrib.auth import ... logout as sign_out...) - само разлогинивание от django
   
   path = request.GET.get('path', None)
-  if path is None:
-    path = '/'
+  # if path is None:
+    # path = '/'
+  path = '/' # пока перенаправляем на главную страницу
   return redirect(to=path)
 
 
-def index(request, reg_success=None):
-  #import pdb
-  #pdb.set_trace() #инструмент для отладки!!!
-  ctx = {}
 
-  return render(request, template_name='index.html', context=ctx)
-
-
-@login_required(login_url='/login/')
-def scores(request):
-  ctx = {}
-
-  ctx.update({ 'scores' : [s.to_json() for s in models.Score.objects.all()] })
-
-  return render(request, template_name='scores.html', context=ctx)
 
 #пробуем сохранение данных в сессии пользователя
 class StarScore(CreateView, JSONResponseMixin):
+
+	model = models.ScoreStar
+	fields = ['score', 'user']
 
 	def get_context_data(self, **kwargs):
 		ctx= super(StarScore,self).get_context_data()
 
 		return ctx
 
-	def render_to_response(self, context, **response_kwargs):
-
-
-		return HttpResponse(json.dumps({'test': 'aaa'}), content_type='application/json')
+	def post(self, requests, *args, **kwargs):
+		super(StarScore, self).post()
+		return HttpResponse(json.dumps({'Created_with_id': self.object.id}), content_type='application/json')
+	# def get_queryset(self):
